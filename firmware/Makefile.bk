@@ -1,4 +1,13 @@
 # Makefile
+CROSS_COMPILE   = mips-linux-gnu-
+
+CC              = $(CROSS_COMPILE)gcc
+LD              = $(CROSS_COMPILE)ld
+OBJCOPY         = $(CROSS_COMPILE)objcopy
+
+AS              = $(CC)
+
+
 INCS            = -I. -I../include -I../include/arch/mips
 
 CFLAGS          = -EL -nostdinc -nostdlib -mabi=32 -mips32 -fno-pic -g \
