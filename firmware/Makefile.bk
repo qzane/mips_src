@@ -24,7 +24,9 @@ BINARY          = firmware.bin
 # Add snprintf.o to the list if you have date & time printing
 OBJS            = firmware-entry.o \
                   firmware-main.o \
-                  ../libc/snprintf.o
+                  ../libc/snprintf.o \
+                  ../libc/memcpy.o \
+                  ../libc/memset.o
 
 # See if you can make further changes to your own variables.
 
