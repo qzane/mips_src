@@ -7,13 +7,60 @@ extern char __rodata_end__[];
 extern char __data_begin__[],__data_end__[];
 extern char __bss_begin__[],__bss_end__[];
 
+#define PA_DISK 0x1f000020
+#define PA_PRINTER 0x1f000010
+
 void reloc_data_bss(void){
    memcpy(__data_begin__, __rodata_end__, __data_end__ - __data_begin__);
    memset(__bss_begin__, 0, __bss_end__ - __bss_begin__);
 }
 
-int kprintf(char *fmt,...);
 void kputs(const char *buf);
+int kprintf(char *fmt,...);
+void readdisk(size_t sector_num, ssize_t offset, void *buf, size_t len);
+void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len);
+
+
+
+void _read_block_(size_t sector_num, void *buf, int nonblock){
+   *(size_t *)(PA_DISK+0xa0000000) = (size_t *)(buf-0x80000000);///PA
+   *(size_t *)(PA_DISK+0xa0000004) = sector_num;
+   *(size_t *)(PA_DISK+0xa0000008) = 0x01;
+   while(!nonblock && (*(size_t *)(PA_DISK+0xa0000008)|0x3)==0x3);///wait for pending
+}
+void read_block(size_t sector_num, void *buf){
+   _read_block_(sector_num,buf,0);
+}
+void _write_block_(size_t sector_num, void *buf, int nonblock){
+   *(size_t *)(PA_DISK+0xa0000000) = (size_t *)(buf-0x80000000);///PA
+   *(size_t *)(PA_DISK+0xa0000004) = sector_num;
+   *(size_t *)(PA_DISK+0xa0000008) = 0x02;
+   while(!nonblock && (*(size_t *)(PA_DISK+0xa0000008)|0x3)==0x3);///wait for pending
+}
+void write_block(size_t sector_num, void *buf){
+   _write_block_(sector_num,buf,0);
+}
+
+void readdisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
+   unsigned char *addr;
+   ;
+}
+
+void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
+   unsigned char *addr;
+   ;
+}
+
+size_t disk_size(){
+   volatile unsigned int size,DMA_addr,sector,status,i;
+   DMA_addr = *(size_t *)(PA_DISK+0xa0000000);
+   sector = *(size_t *)(PA_DISK+0xa0000004);
+   status = *(size_t *)(PA_DISK+0xa0000008);
+   size =  *(size_t *)(PA_DISK+0xa000000c);
+   kprintf("DMA:%x\nSector:%x\nStatus:%x\nSize:%x\n",DMA_addr,sector,status,size);
+   return size;
+}
+
 
 int g = 6;
 
@@ -24,13 +71,31 @@ void change_global_data(void){
    kprintf("g = %d\n",g);
 }
 
+unsigned char buff[1100];
 int main(void){
-    int a=34;
+    int a;
    //while(1)
     reloc_data_bss();
     kputs("Hello there!\n");
+
     change_global_data();
-    kprintf("One: %d Hex of 34: 0x%x done\n",1,a);
+
+    kprintf("Disk size: %x\n",disk_size());
+    _read_block_(0,buff,1);
+    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
+    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
+    kprintf("Data:%x\n",buff[0]);
+    buff[0]=buff[0]+1; 
+    _write_block_(0,buff,1);
+    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
+    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
+    buff[0]=0;
+    read_block(0,buff);
+    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
+    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
+    kprintf("Data:%x\n",buff[0]);
+
+
     while(1);/* endless loop */
     return 0;
 }
@@ -48,7 +113,7 @@ int kprintf(char *fmt,...){
 
 void kputs(const char *buf){
     // Printer: 0x1f000010 | 0xbf000010 
-    volatile unsigned char *pointer = (volatile unsigned char *)0xbf000010;
+    volatile unsigned char *pointer = (volatile unsigned char *)(PA_PRINTER+0xa0000000);
     for(; *buf != '\0';++buf)
         *pointer = *buf;
 
