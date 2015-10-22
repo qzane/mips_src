@@ -1,0 +1,2 @@
+mplement the readdisk function above.
+

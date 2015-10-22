@@ -9,6 +9,8 @@ extern char __bss_begin__[],__bss_end__[];
 
 #define PA_DISK 0x1f000020
 #define PA_PRINTER 0x1f000010
+#define BLOCK_SIZE 512
+#define BLOCK_MASK 0x1ff
 
 void reloc_data_bss(void){
    memcpy(__data_begin__, __rodata_end__, __data_end__ - __data_begin__);
@@ -41,9 +43,20 @@ void write_block(size_t sector_num, void *buf){
    _write_block_(sector_num,buf,0);
 }
 
+unsigned char DISK_BUFF[BLOCK_SIZE];
 void readdisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
    unsigned char *addr;
-   ;
+   addr = buf;
+   read_block(sector_num++,DISK_BUFF);
+   while(len>0){
+      if(offset>=BLOCK_SIZE){//mem miss
+         read_block(sector_num++,DISK_BUFF);
+         offset-=BLOCK_SIZE;
+      }
+      *addr=DISK_BUFF[offset++];
+      ++addr;
+      --len;
+   }
 }
 
 void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
@@ -71,8 +84,8 @@ void change_global_data(void){
    kprintf("g = %d\n",g);
 }
 
-unsigned char buff[1100];
 int main(void){
+    unsigned char buff[1100];
     int a;
    //while(1)
     reloc_data_bss();
@@ -86,15 +99,22 @@ int main(void){
     kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
     kprintf("Data:%x\n",buff[0]);
     buff[0]=buff[0]+1; 
+    buff[1]=buff[0]+0x10;
     _write_block_(0,buff,1);
     kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
     kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
-    buff[0]=0;
-    read_block(0,buff);
+    buff[0]=0xf;
+    buff[1]=0xf;
+    buff[2]=0xf;
+    buff[3]=0xf;
+    //read_block(0,buff);
+    readdisk(0,1,buff,2);
     kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
     kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
+    for(a=0;a<5;++a)
+       kprintf("%x ",buff[a]);
     kprintf("Data:%x\n",buff[0]);
-
+    
 
     while(1);/* endless loop */
     return 0;
