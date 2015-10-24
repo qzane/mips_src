@@ -9,19 +9,35 @@ extern char __bss_begin__[],__bss_end__[];
 
 #define PA_DISK 0x1f000020
 #define PA_PRINTER 0x1f000010
-#define BLOCK_SIZE 512
-#define BLOCK_MASK 0x1ff
+#define SECTOR_SIZE 512
+#define SECTOR_MASK 0x1ff
 
 void reloc_data_bss(void){
    memcpy(__data_begin__, __rodata_end__, __data_end__ - __data_begin__);
    memset(__bss_begin__, 0, __bss_end__ - __bss_begin__);
 }
 
+typedef void (*readdisk_t)(size_t,ssize_t,void *,size_t);
+typedef void (*bootentry_t)(readdisk_t,uintptr_t);
+
+
+
+
+
 void kputs(const char *buf);
 int kprintf(char *fmt,...);
 void readdisk(size_t sector_num, ssize_t offset, void *buf, size_t len);
 void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len);
 
+
+void execute_mbr(void){
+    unsigned char mbr[SECTOR_SIZE];
+    bootentry_t boot;
+    read_block(0,mbr);
+    ///readdisk(0,0,mbr,SECTOR_SIZE);   
+    boot = (bootentry_t)mbr; 
+    (*boot)(readdisk, mbr);///尚不明白第二个参数含义
+}
 
 
 void _read_block_(size_t sector_num, void *buf, int nonblock){
@@ -43,15 +59,15 @@ void write_block(size_t sector_num, void *buf){
    _write_block_(sector_num,buf,0);
 }
 
-unsigned char DISK_BUFF[BLOCK_SIZE];
+unsigned char DISK_BUFF[SECTOR_SIZE];
 void readdisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
    unsigned char *addr;
    addr = buf;
    read_block(sector_num++,DISK_BUFF);
    while(len>0){
-      if(offset>=BLOCK_SIZE){//mem miss
+      if(offset>=SECTOR_SIZE){//mem miss
          read_block(sector_num++,DISK_BUFF);
-         offset-=BLOCK_SIZE;
+         offset-=SECTOR_SIZE;
       }
       *addr=DISK_BUFF[offset++];
       ++addr;
