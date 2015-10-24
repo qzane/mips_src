@@ -10,7 +10,7 @@ AS              = $(CC)
 
 INCS            = -I. -I../include -I../include/arch/mips
 
-CFLAGS          = -EL -nostdinc -nostdlib -mabi=32 -mips32 -fno-pic -g \
+CFLAGS          = -DELF32  -EL -nostdinc -nostdlib -mabi=32 -mips32 -fno-pic -g \
                   -mno-abicalls $(INCS)
 
 ASFLAGS         = $(CFLAGS)
@@ -22,7 +22,7 @@ BINARY          = mbr.bin
 # Take caution of the order, if you didn't make the required changes
 # in linker script in previous exercise.
 # Add snprintf.o to the list if you have date & time printing
-OBJS            = mbr.o
+OBJS            = bootsect.o
 
 # See if you can make further changes to your own variables.
 
