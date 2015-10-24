@@ -35,8 +35,8 @@ void execute_mbr(void){
     bootentry_t boot;
     read_block(0,mbr);
     ///readdisk(0,0,mbr,SECTOR_SIZE);   
-    boot = (bootentry_t)mbr; 
-    (*boot)(readdisk, mbr);///尚不明白第二个参数含义
+    boot = (bootentry_t)_mbr; 
+    (*boot)(readdisk,_mbr);///尚不明白第二个参数含义
 }
 
 
