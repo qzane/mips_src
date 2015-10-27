@@ -11,6 +11,7 @@ extern char __bss_begin__[],__bss_end__[];
 #define PA_PRINTER 0x1f000010
 #define SECTOR_SIZE 512
 #define SECTOR_MASK 0x1ff
+#define MBR_INITIAL_ADDRESS 0x80001000
 
 void reloc_data_bss(void){
    memcpy(__data_begin__, __rodata_end__, __data_end__ - __data_begin__);
@@ -18,7 +19,7 @@ void reloc_data_bss(void){
 }
 
 typedef void (*readdisk_t)(size_t,ssize_t,void *,size_t);
-typedef void (*bootentry_t)(readdisk_t,uintptr_t);
+typedef void (*bootentry_t)(readdisk_t);
 
 
 
@@ -31,12 +32,12 @@ void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len);
 
 
 void execute_mbr(void){
-    unsigned char mbr[SECTOR_SIZE];
+    unsigned char *mbr = MBR_INITIAL_ADDRESS;
     bootentry_t boot;
     read_block(0,mbr);
     ///readdisk(0,0,mbr,SECTOR_SIZE);   
-    boot = (bootentry_t)_mbr; 
-    (*boot)(readdisk,_mbr);///尚不明白第二个参数含义
+    boot = (bootentry_t)mbr; 
+    (*boot)(readdisk);
 }
 
 
@@ -131,7 +132,9 @@ int main(void){
        kprintf("%x ",buff[a]);
     kprintf("Data:%x\n",buff[0]);
     
-
+    kprintf("MBR begin\n");
+    execute_mbr();
+    kprintf("MBR end\n");
     while(1);/* endless loop */
     return 0;
 }
