@@ -11,14 +11,17 @@ export
 
 all:
 	$(MAKE) -C firmware
+	$(MAKE) -C mbr
 	# more subdirectories...
 
 clean:
 	$(MAKE) -C firmware clean
+	$(MAKE) -C mbr clean
 	# more subdirectories...
 
 msim:
 	$(MAKE) -C firmware msim
+	$(MAKE) -C mbr msim
 	#sth more
 
 .PHONY: all clean

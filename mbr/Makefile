@@ -23,6 +23,7 @@ BINARY          = mbr.bin
 # in linker script in previous exercise.
 # Add snprintf.o to the list if you have date & time printing
 OBJS            = bootsect.o
+DISK            = ../disk.img
 
 # See if you can make further changes to your own variables.
 
@@ -42,6 +43,13 @@ all: $(BINARY)
 
 clean:
 	rm -f $(OBJS) $(ELF) $(BINARY)
+msim:
+msim: all
+	if [ $(shell wc -c $(BINARY)  | cut -f 1 -d " ") -ge 446 ]; then \
+		 echo Bootloader too large; \
+	else \
+		 dd if=$(BINARY) of=$(DISK) conv=notrunc;\
+	fi
 
 .PHONY: all clean 
 

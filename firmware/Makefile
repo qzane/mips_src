@@ -38,7 +38,7 @@ all: $(BINARY)
 clean:
 	rm -f $(OBJS) $(ELF) $(BINARY)
 msim: $(BINARY)
-	msim -c *.conf
+	#msim -c *.conf
 
 .PHONY: all clean msim
 

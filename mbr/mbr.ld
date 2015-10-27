@@ -5,6 +5,7 @@ ENTRY(__MBR)
 
 
 SECTIONS {
+    . = 0x80001000;
     .text : {
         *(.text);
     } >rom

@@ -23,11 +23,13 @@ struct mbr_part_entry {
 typedef ssize_t (*readdisk_func_t)(size_t, size_t, void *, size_t);
 typedef void (*entry_t)(void);
 
+
+#define mbr_addr 0x80010000;
 #define PART0_ENTRY_OFFSET	446
 #define PART0_ENTRY		((unsigned long)mbr_addr + PART0_ENTRY_OFFSET)
 
 /* The first 446 bytes contains this piece of code. */
-void boot(readdisk_func_t readdisk, uintptr_t mbr_addr)
+void boot(readdisk_func_t readdisk)
 {
 	struct elfhdr eh;
 	struct elf_phdr ph;
