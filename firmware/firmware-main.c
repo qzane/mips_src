@@ -115,23 +115,6 @@ int main(void){
     kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
     kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
     kprintf("Data:%x\n",buff[0]);
-    buff[0]=buff[0]+1; 
-    buff[1]=buff[0]+0x10;
-    _write_block_(0,buff,1);
-    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
-    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
-    buff[0]=0xf;
-    buff[1]=0xf;
-    buff[2]=0xf;
-    buff[3]=0xf;
-    //read_block(0,buff);
-    readdisk(0,1,buff,2);
-    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
-    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
-    for(a=0;a<5;++a)
-       kprintf("%x ",buff[a]);
-    kprintf("Data:%x\n",buff[0]);
-    
     kprintf("MBR begin\n");
     execute_mbr();
     kprintf("MBR end\n");

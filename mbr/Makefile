@@ -43,7 +43,6 @@ all: $(BINARY)
 
 clean:
 	rm -f $(OBJS) $(ELF) $(BINARY)
-msim:
 msim: all
 	if [ $(shell wc -c $(BINARY)  | cut -f 1 -d " ") -ge 446 ]; then \
 		 echo Bootloader too large; \

@@ -23,7 +23,10 @@ msim:
 	$(MAKE) -C firmware msim
 	$(MAKE) -C mbr msim
 	#sth more
+run: msim
+	msim -c ./msim/msim.conf
 
-.PHONY: all clean
+
+.PHONY: all clean msim
 
 
