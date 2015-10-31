@@ -1,18 +1,9 @@
-#include "sys/types.h"
-#include "stddef.h"
-#include "stdarg.h"
-#include "stdio.h"
+#include "cpu.h"
+#define PA_PRINTER 0x1f000010
 
-int kprintf(char *fmt,...){
-   int res;
-   char buffer[BUFSIZ];
-   va_list ap;
-   va_start(ap,fmt);
-   res = vsnprintf(buffer,BUFSIZ,fmt,ap);
-   kputs(buffer);
-   va_end(ap);  
-   return res;
-}
+
+
+unsigned char cpu_stack[KSTACK_SIZE];
 
 void kputs(const char *buf){
     // Printer: 0x1f000010 | 0xbf000010 

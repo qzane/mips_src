@@ -14,7 +14,7 @@ NESTED(__start, 0, ra)
         xori    a0, ST_ERL
         mtc0    a0, CP0_STATUS
         LA      sp, cpu_stack
-        ADDIU   sp, KSTACK_SIZE
+        ADDIU   sp, 8192
         jal     main
 END(__start)
 

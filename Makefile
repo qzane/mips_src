@@ -12,16 +12,19 @@ export
 all:
 	$(MAKE) -C firmware
 	$(MAKE) -C mbr
+	$(MAKE) -C kern
 	# more subdirectories...
 
 clean:
 	$(MAKE) -C firmware clean
 	$(MAKE) -C mbr clean
+	$(MAKE) -C kern clean
 	# more subdirectories...
 
 msim:
 	$(MAKE) -C firmware msim
 	$(MAKE) -C mbr msim
+	$(MAKE) -C kern msim
 	#sth more
 run: msim
 	msim -c ./msim/msim.conf

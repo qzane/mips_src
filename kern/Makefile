@@ -18,6 +18,7 @@ OBJS            = kern-entry.o \
                   ../libc/snprintf.o \
                   ../libc/memcpy.o \
                   ../libc/memset.o
+DISK            = ../disk.img
 
 # See if you can make further changes to your own variables.
 
@@ -38,7 +39,7 @@ all: $(BINARY)
 clean:
 	rm -f $(OBJS) $(ELF) $(BINARY)
 msim: $(BINARY)
-	#msim -c *.conf
+	dd if=$(BINARY) of=$(DISK) bs=512 seek=1 conv=notrunc
 
 .PHONY: all clean msim
 

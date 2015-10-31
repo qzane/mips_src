@@ -5,13 +5,13 @@ ENTRY(__reset)
 
 
 SECTIONS {
-    .0x80003000;
+    . = 0x80003000a;
     .text : {
         *(.text);
-    } >rom
+    }
     .rodata : {
         *(.rodata);
-    } >rom
+    }
     .data : {
         *(.data);
     }
