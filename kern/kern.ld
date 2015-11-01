@@ -5,7 +5,7 @@ ENTRY(__reset)
 
 
 SECTIONS {
-    . = 0x80003000a;
+    . = 0x80002f30;
     .text : {
         *(.text);
     }

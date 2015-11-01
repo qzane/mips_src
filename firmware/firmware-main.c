@@ -13,13 +13,16 @@ extern char __bss_begin__[],__bss_end__[];
 #define SECTOR_MASK 0x1ff
 #define MBR_INITIAL_ADDRESS 0x80001000
 
+int hehe = 0;
+
 void reloc_data_bss(void){
    memcpy(__data_begin__, __rodata_end__, __data_end__ - __data_begin__);
    memset(__bss_begin__, 0, __bss_end__ - __bss_begin__);
 }
 
 typedef void (*readdisk_t)(size_t,ssize_t,void *,size_t);
-typedef void (*bootentry_t)(readdisk_t);
+typedef int (*kprintf_t)(char *fmt,...);
+typedef void (*bootentry_t)(readdisk_t,kprintf_t);
 
 
 
@@ -35,9 +38,10 @@ void execute_mbr(void){
     unsigned char *mbr = MBR_INITIAL_ADDRESS;
     bootentry_t boot;
     read_block(0,mbr);
+    hehe=1;
     ///readdisk(0,0,mbr,SECTOR_SIZE);   
     boot = (bootentry_t)mbr; 
-    (*boot)(readdisk);
+    (*boot)(readdisk,kprintf);
 }
 
 
@@ -63,17 +67,21 @@ void write_block(size_t sector_num, void *buf){
 unsigned char DISK_BUFF[SECTOR_SIZE];
 void readdisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
    unsigned char *addr;
+   ///if(hehe)
+   kprintf("read %x %x %x %d",sector_num,offset,buf,len);
    addr = buf;
    read_block(sector_num++,DISK_BUFF);
    while(len>0){
-      if(offset>=SECTOR_SIZE){//mem miss
+      while(offset>=SECTOR_SIZE){//mem miss
          read_block(sector_num++,DISK_BUFF);
          offset-=SECTOR_SIZE;
       }
-      *addr=DISK_BUFF[offset++];
+      *addr=DISK_BUFF[offset];
+      ++offset;
       ++addr;
       --len;
    }
+   kputs("end\n");
 }
 
 void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len){

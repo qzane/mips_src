@@ -9,11 +9,11 @@ ASFLAGS         = $(CFLAGS)
 LDSCRIPT        = kern.ld
 
 ELF             = kern
-BINARY          = kern.bin
 # Take caution of the order, if you didn't make the required changes
 # in linker script in previous exercise.
 # Add snprintf.o to the list if you have date & time printing
 OBJS            = kern-entry.o \
+                  kern-stack.o \
                   kern-main.o \
                   ../libc/snprintf.o \
                   ../libc/memcpy.o \
@@ -21,9 +21,6 @@ OBJS            = kern-entry.o \
 DISK            = ../disk.img
 
 # See if you can make further changes to your own variables.
-
-$(BINARY): $(ELF)
-	$(OBJCOPY) -O binary -j .text -j .rodata -j .data -j .bss $(ELF) $(BINARY)
 
 $(ELF): $(OBJS)
 	$(LD) -T $(LDSCRIPT) -o $(ELF) $(OBJS)
@@ -34,12 +31,12 @@ $(ELF): $(OBJS)
 # You should have already removed firmware-entry.o rule by now according to
 # the above exercise.
 
-all: $(BINARY)
+all: $(ELF)
 
 clean:
 	rm -f $(OBJS) $(ELF) $(BINARY)
-msim: $(BINARY)
-	dd if=$(BINARY) of=$(DISK) bs=512 seek=1 conv=notrunc
+msim: all
+	dd if=$(ELF) of=$(DISK) bs=1 seek=2048 conv=notrunc
 
 .PHONY: all clean msim
 

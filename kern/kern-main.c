@@ -1,9 +1,4 @@
-#include "cpu.h"
 #define PA_PRINTER 0x1f000010
-
-
-
-unsigned char cpu_stack[KSTACK_SIZE];
 
 void kputs(const char *buf){
     // Printer: 0x1f000010 | 0xbf000010 
@@ -15,6 +10,7 @@ void kputs(const char *buf){
 
 int main(void){
     kputs("Hello kern!\n");
+    for(;;);
 }
 
 

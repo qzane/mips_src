@@ -22,14 +22,14 @@ struct mbr_part_entry {
 
 typedef ssize_t (*readdisk_func_t)(size_t, size_t, void *, size_t);
 typedef void (*entry_t)(void);
-
+typedef int (*kprintf_t)(char *fmt,...);
 
 #define mbr_addr 0x80010000;
 #define PART0_ENTRY_OFFSET	446
 #define PART0_ENTRY		((unsigned long)mbr_addr + PART0_ENTRY_OFFSET)
 
 /* The first 446 bytes contains this piece of code. */
-void boot(readdisk_func_t readdisk)
+void boot(readdisk_func_t readdisk,kprintf_t kprintf)
 {
 	struct elfhdr eh;
 	struct elf_phdr ph;
@@ -51,11 +51,11 @@ void boot(readdisk_func_t readdisk)
 	lba = (lba << 16) + *(uint16_t *)addr;
 #endif
 	uintptr_t seg;
-
 	/* Read the ELF header first */
 	readdisk(lba, pos, &eh, sizeof(eh));
     ///eq (*readdisk)(...)
 	pos = eh.e_phoff;
+        kprintf("mbr  %x %x %x\n",eh.e_phoff,eh.e_phnum,eh.e_entry);
 	for (i = 0; i < eh.e_phnum; ++i) {
 		readdisk(lba, pos, &ph, sizeof(ph));
 		if (ph.p_type == PT_LOAD) {
@@ -64,7 +64,8 @@ void boot(readdisk_func_t readdisk)
 		}
 		pos += eh.e_phentsize;
 	}
-
+        kprintf("ee");
 	entry = (entry_t)(eh.e_entry);
 	(*entry)();
+        kprintf("h?");
 }

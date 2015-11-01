@@ -8,10 +8,10 @@ SECTIONS {
     . = 0x80001000;
     .text : {
         *(.text);
-    } >rom
+    }
     .rodata : {
         *(.rodata);
-    } >rom
+    }
     .data : {
         *(.data);
     } 

@@ -8,13 +8,15 @@
 #include <asm/regdef.h>
 #include <asm/cp0regdef.h>
 
+#define KSTACK_SIZE     8192 
+
 NESTED(__start, 0, ra)
         mfc0    a0, CP0_STATUS
         ori     a0, ST_ERL
         xori    a0, ST_ERL
         mtc0    a0, CP0_STATUS
         LA      sp, cpu_stack
-        ADDIU   sp, 8192
+        ADDIU   sp, KSTACK_SIZE
         jal     main
 END(__start)
 
