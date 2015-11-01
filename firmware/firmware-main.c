@@ -13,7 +13,6 @@ extern char __bss_begin__[],__bss_end__[];
 #define SECTOR_MASK 0x1ff
 #define MBR_INITIAL_ADDRESS 0x80001000
 
-int hehe = 0;
 
 void reloc_data_bss(void){
    memcpy(__data_begin__, __rodata_end__, __data_end__ - __data_begin__);
@@ -22,8 +21,8 @@ void reloc_data_bss(void){
 
 typedef void (*readdisk_t)(size_t,ssize_t,void *,size_t);
 typedef int (*kprintf_t)(char *fmt,...);
-typedef void (*bootentry_t)(readdisk_t,kprintf_t);
-
+//typedef void (*bootentry_t)(readdisk_t,kprintf_t);
+typedef void (*bootentry_t)(readdisk_t);
 
 
 
@@ -37,11 +36,11 @@ void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len);
 void execute_mbr(void){
     unsigned char *mbr = MBR_INITIAL_ADDRESS;
     bootentry_t boot;
-    read_block(0,mbr);
-    hehe=1;
-    ///readdisk(0,0,mbr,SECTOR_SIZE);   
+    //read_block(0,mbr);
+    readdisk(0,0,mbr,SECTOR_SIZE);   
     boot = (bootentry_t)mbr; 
-    (*boot)(readdisk,kprintf);
+    //(*boot)(readdisk,kprintf);
+    (*boot)(readdisk);
 }
 
 
@@ -67,11 +66,10 @@ void write_block(size_t sector_num, void *buf){
 unsigned char DISK_BUFF[SECTOR_SIZE];
 void readdisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
    unsigned char *addr;
-   ///if(hehe)
-   kprintf("read %x %x %x %d",sector_num,offset,buf,len);
    addr = buf;
-   read_block(sector_num++,DISK_BUFF);
-   while(len>0){
+   read_block(sector_num,DISK_BUFF);
+   ++sector_num;
+   while(len!=0){
       while(offset>=SECTOR_SIZE){//mem miss
          read_block(sector_num++,DISK_BUFF);
          offset-=SECTOR_SIZE;
@@ -81,7 +79,6 @@ void readdisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
       ++addr;
       --len;
    }
-   kputs("end\n");
 }
 
 void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
@@ -123,6 +120,11 @@ int main(void){
     kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
     kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
     kprintf("Data:%x\n",buff[0]);
+    //read_block(0x4b800,buff); ///kern on disk
+    //for(a=0;a<52;++a)
+    //  kprintf("data is like %x\n",buff[a]);
+
+
     kprintf("MBR begin\n");
     execute_mbr();
     kprintf("MBR end\n");

@@ -36,7 +36,7 @@ all: $(ELF)
 clean:
 	rm -f $(OBJS) $(ELF) $(BINARY)
 msim: all
-	dd if=$(ELF) of=$(DISK) bs=1 seek=2048 conv=notrunc
+	dd if=$(ELF) of=$(DISK) bs=512 seek=309248 conv=notrunc
 
 .PHONY: all clean msim
 

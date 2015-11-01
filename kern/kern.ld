@@ -1,11 +1,11 @@
 /* firmware.ld */
 OUTPUT_FORMAT("elf32-tradlittlemips")
 OUTPUT_ARCH("mips")
-ENTRY(__reset)
+ENTRY(__start)
 
 
 SECTIONS {
-    . = 0x80002f30;
+    . = 0x80003000;
     .text : {
         *(.text);
     }

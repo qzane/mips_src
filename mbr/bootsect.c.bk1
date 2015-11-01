@@ -22,13 +22,14 @@ struct mbr_part_entry {
 
 typedef ssize_t (*readdisk_func_t)(size_t, size_t, void *, size_t);
 typedef void (*entry_t)(void);
+typedef int (*kprintf_t)(char *fmt,...);
 
-#define mbr_addr                0x80001000
+#define mbr_addr 0x80001000
 #define PART0_ENTRY_OFFSET	446
 #define PART0_ENTRY		((unsigned long)mbr_addr + PART0_ENTRY_OFFSET)
 
 /* The first 446 bytes contains this piece of code. */
-void boot(readdisk_func_t readdisk)
+void boot(readdisk_func_t readdisk,kprintf_t kprintf)
 {
 	struct elfhdr eh;
 	struct elf_phdr ph;
@@ -39,22 +40,17 @@ void boot(readdisk_func_t readdisk)
 	 * You can't use the code below to obtain LBA.
 	 * Try uncommenting the following to see what will happen.
 	 */
-#if 0
-	struct mbr_part_entry *pe = (struct mbr_part_entry *)PART0_ENTRY;
-	uint32_t lba = *(uint32_t *)(&pe[1].first_sector_lba);
-#else
 	unsigned long addr = (unsigned long)mbr_addr + PART0_ENTRY_OFFSET
 	    + sizeof(struct mbr_part_entry)
 	    + MEMBER_OFFSET(struct mbr_part_entry, first_sector_lba);
 	uint32_t lba = *(uint16_t *)(addr + 2);
-	lba = (lba << 16) + *(uint16_t *)addr;
-#endif
 	uintptr_t seg;
-
+	lba = (lba << 16) + *(uint16_t *)addr;
 	/* Read the ELF header first */
 	readdisk(lba, pos, &eh, sizeof(eh));
-
+        ///eq (*readdisk)(...)
 	pos = eh.e_phoff;
+        ///kprintf("r %x %x %x %x\n",&eh,*(unsigned char*)&eh,*((unsigned char *)&eh+16),0);
 	for (i = 0; i < eh.e_phnum; ++i) {
 		readdisk(lba, pos, &ph, sizeof(ph));
 		if (ph.p_type == PT_LOAD) {
@@ -63,7 +59,6 @@ void boot(readdisk_func_t readdisk)
 		}
 		pos += eh.e_phentsize;
 	}
-
 	entry = (entry_t)(eh.e_entry);
 	(*entry)();
 }
