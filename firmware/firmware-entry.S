@@ -2,12 +2,15 @@
 #include <asm/asm.h>
 #include <asm/regdef.h>
 #include <asm/cp0regdef.h>
+#include <config.h>
+
+
 NESTED(__reset, 0, ra) /* 0xbfc00000 */
     mfc0 a0, CP0_STATUS
     ori a0, ST_ERL
     xori a0, ST_ERL
     mtc0 a0, CP0_STATUS
-    li sp, 0x8f000000
+    li sp, FIRMWARE_STACK_ADDR
     jal main
 END(__reset)
     .align 9

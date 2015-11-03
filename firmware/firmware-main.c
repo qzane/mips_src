@@ -2,17 +2,11 @@
 #include "stddef.h"
 #include "stdarg.h"
 #include "stdio.h"
+#include "config.h"
 
 extern char __rodata_end__[];
 extern char __data_begin__[],__data_end__[];
 extern char __bss_begin__[],__bss_end__[];
-
-#define PA_DISK 0x1f000020
-#define PA_PRINTER 0x1f000010
-#define SECTOR_SIZE 512
-#define SECTOR_MASK 0x1ff
-#define MBR_INITIAL_ADDRESS 0x80001000
-
 
 void reloc_data_bss(void){
    memcpy(__data_begin__, __rodata_end__, __data_end__ - __data_begin__);
@@ -34,7 +28,7 @@ void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len);
 
 
 void execute_mbr(void){
-    unsigned char *mbr = MBR_INITIAL_ADDRESS;
+    unsigned char *mbr = (unsigned char *)MBR_INITIAL_ADDR;
     bootentry_t boot;
     //read_block(0,mbr);
     readdisk(0,0,mbr,SECTOR_SIZE);   
@@ -45,19 +39,19 @@ void execute_mbr(void){
 
 
 void _read_block_(size_t sector_num, void *buf, int nonblock){
-   *(size_t *)(PA_DISK+0xa0000000) = (size_t *)(buf-0x80000000);///PA
-   *(size_t *)(PA_DISK+0xa0000004) = sector_num;
-   *(size_t *)(PA_DISK+0xa0000008) = 0x01;
-   while(!nonblock && (*(size_t *)(PA_DISK+0xa0000008)|0x3)==0x3);///wait for pending
+   *(size_t **)(PA_DISK+ADDR_PtoV2+DISK_DMA_OFFSET) = (size_t *)(buf-ADDR_PtoV1);///PA
+   *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_SECTOR_OFFSET) = sector_num;
+   *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET) = DISK_R_BIT;
+   while(!nonblock && (*(size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET)|DISK_RW_MASK)==DISK_RW_MASK);///wait for pending
 }
 void read_block(size_t sector_num, void *buf){
    _read_block_(sector_num,buf,0);
 }
 void _write_block_(size_t sector_num, void *buf, int nonblock){
-   *(size_t *)(PA_DISK+0xa0000000) = (size_t *)(buf-0x80000000);///PA
-   *(size_t *)(PA_DISK+0xa0000004) = sector_num;
-   *(size_t *)(PA_DISK+0xa0000008) = 0x02;
-   while(!nonblock && (*(size_t *)(PA_DISK+0xa0000008)|0x3)==0x3);///wait for pending
+   *(size_t **)(PA_DISK+ADDR_PtoV2+DISK_DMA_OFFSET) = (size_t *)(buf-ADDR_PtoV1);///PA
+   *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_SECTOR_OFFSET) = sector_num;
+   *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET) = DISK_W_BIT;
+   while(!nonblock && (*(size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET)|DISK_RW_MASK)==DISK_RW_MASK);///wait for pending
 }
 void write_block(size_t sector_num, void *buf){
    _write_block_(sector_num,buf,0);
@@ -88,26 +82,26 @@ void writedisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
 
 size_t disk_size(){
    volatile unsigned int size,DMA_addr,sector,status,i;
-   DMA_addr = *(size_t *)(PA_DISK+0xa0000000);
-   sector = *(size_t *)(PA_DISK+0xa0000004);
-   status = *(size_t *)(PA_DISK+0xa0000008);
-   size =  *(size_t *)(PA_DISK+0xa000000c);
+   DMA_addr = *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_DMA_OFFSET);
+   sector = *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_SECTOR_OFFSET);
+   status = *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET);
+   size =  *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_RW_MASK);
    kprintf("DMA:%x\nSector:%x\nStatus:%x\nSize:%x\n",DMA_addr,sector,status,size);
    return size;
 }
 
 
-int g = 6;
+int g = 6;//just a test not magic num
 
 void change_global_data(void){
    kprintf("g = %d\n",g);
    kprintf("addr g = %x\n",&g);
-   g = 8;
+   g = 8;//not a magic num
    kprintf("g = %d\n",g);
 }
 
 int main(void){
-    unsigned char buff[1100];
+    unsigned char buff[1100];//just a test not a magic num
     int a;
    //while(1)
     reloc_data_bss();
@@ -117,8 +111,6 @@ int main(void){
 
     kprintf("Disk size: %x\n",disk_size());
     _read_block_(0,buff,1);
-    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
-    kprintf("state:%x\n",*(unsigned int *)(PA_DISK+0xa0000008));
     kprintf("Data:%x\n",buff[0]);
     //read_block(0x4b800,buff); ///kern on disk
     //for(a=0;a<52;++a)
@@ -145,7 +137,7 @@ int kprintf(char *fmt,...){
 
 void kputs(const char *buf){
     // Printer: 0x1f000010 | 0xbf000010 
-    volatile unsigned char *pointer = (volatile unsigned char *)(PA_PRINTER+0xa0000000);
+    volatile unsigned char *pointer = (volatile unsigned char *)(PA_PRINTER+ADDR_PtoV2);
     for(; *buf != '\0';++buf)
         *pointer = *buf;
 
