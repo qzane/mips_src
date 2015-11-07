@@ -1,2 +1,4 @@
-mplement the readdisk function above.
+Lab2 config.h for kern and mbr 
+
+todo: '..' in Makefile
 

@@ -23,7 +23,7 @@ BINARY          = mbr.bin
 # in linker script in previous exercise.
 # Add snprintf.o to the list if you have date & time printing
 OBJS            = bootsect.o
-DISK            = ../disk.img
+#DISK            = ../disk.img
 
 # See if you can make further changes to your own variables.
 

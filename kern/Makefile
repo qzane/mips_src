@@ -18,7 +18,7 @@ OBJS            = kern-entry.o \
                   ../libc/snprintf.o \
                   ../libc/memcpy.o \
                   ../libc/memset.o
-DISK            = ../disk.img
+#DISK            = ../disk.img
 
 # See if you can make further changes to your own variables.
 

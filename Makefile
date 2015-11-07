@@ -1,12 +1,12 @@
 # Makefile (top-level)
 
 CROSS_COMPILE   = mips-linux-gnu-
-
 CC              = $(CROSS_COMPILE)gcc
 LD              = $(CROSS_COMPILE)ld
 OBJCOPY         = $(CROSS_COMPILE)objcopy
 
 AS              = $(CC)
+DISK            = ../msim/disk.img
 export
 
 all:
@@ -27,7 +27,7 @@ msim:
 	$(MAKE) -C kern msim
 	#sth more
 run: msim
-	msim -c ./msim/msim.conf
+	msim -c ./msim/firmware.conf
 
 
 .PHONY: all clean msim
