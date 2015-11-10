@@ -1,4 +1,4 @@
-Lab2 config.h for kern and mbr 
+Obtaining CPU ID on MIPS Revision 2 and later
 
 todo: '..' in Makefile
 
