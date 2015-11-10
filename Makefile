@@ -28,7 +28,7 @@ msim:
 	$(MAKE) -C kern msim
 	#sth more
 run: msim
-	msim -c ./msim/firmware.conf
+	msim -c ./msim/msim.conf
 
 
 .PHONY: all clean msim
