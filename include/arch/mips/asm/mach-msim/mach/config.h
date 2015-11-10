@@ -1,3 +1,5 @@
+#ifndef _MACH_CONFIG_H
+#define _MACH_CONFIG_H
 
 /*firmware-main*/
 #define PA_DISK 0x1f000020
@@ -16,3 +18,5 @@
 
 /*firmware-entry*/
 #define FIRMWARE_STACK_ADDR  0x8f000000
+
+#endif
