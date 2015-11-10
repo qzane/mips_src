@@ -1,5 +1,5 @@
 # Makefile
-INCS            = -I. -I../include -I../include/arch/mips
+#INCS            = -I. -I../include -I../include/arch/mips
 
 CFLAGS          = -EL -nostdinc -nostdlib -mabi=32 -mips32 -fno-pic -g \
                   -mno-abicalls $(INCS)

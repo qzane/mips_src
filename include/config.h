@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H
 #define _CONFIG_H
 
-#inlcude <asm/config.h>
+#include <asm/config.h>
 
 /*firmware-main*/
 #define SECTOR_SIZE 512

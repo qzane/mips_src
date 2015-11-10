@@ -6,6 +6,7 @@ LD              = $(CROSS_COMPILE)ld
 OBJCOPY         = $(CROSS_COMPILE)objcopy
 
 AS              = $(CC)
+INCS            = -I. -I../include -I../include/arch/mips -I../include/arch/mips/ -I../include/arch/mips/asm/mach-msim/
 DISK            = ../msim/disk.img
 export
 
