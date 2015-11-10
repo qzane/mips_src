@@ -1,5 +1,6 @@
 Obtaining CPU ID on MIPS Revision 2 and later
 
+todo: calc different mailbox_va
 todo: '..' in Makefile
 tode: improve readdisk if(offset=0&&len>block_size)
 
