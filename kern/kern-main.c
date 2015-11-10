@@ -1,8 +1,9 @@
-#define PA_PRINTER 0x1f000010
+#include "config.h"
+
 
 void kputs(const char *buf){
     // Printer: 0x1f000010 | 0xbf000010 
-    volatile unsigned char *pointer = (volatile unsigned char *)(PA_PRINTER+0xa0000000);
+    volatile unsigned char *pointer = (volatile unsigned char *)(PA_PRINTER+ADDR_PtoV2);
     for(; *buf != '\0';++buf)
         *pointer = *buf;
 

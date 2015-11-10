@@ -1,0 +1,4 @@
+
+#define PA_PRINTER 0x1f000010
+
+#define ADDR_PtoV2 0xa0000000
