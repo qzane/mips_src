@@ -29,7 +29,9 @@ nop
 jal __generic_exception
 
 __slave_entry:
+	sll     a2, a1, 4
     li      a1, MSIM_ORDER_MAILBOX_BASE_VA
+	add     a1, a1, a2
     sw      zero, (a1)
 1:  lw      a0, (a1)
     beqz    a0, 1b
