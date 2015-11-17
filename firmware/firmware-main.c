@@ -39,18 +39,18 @@ void execute_mbr(void){
 
 
 void _read_block_(size_t sector_num, void *buf, int nonblock){
-   *(size_t **)(PA_DISK+ADDR_PtoV2+DISK_DMA_OFFSET) = (size_t *)(buf-ADDR_PtoV1);///PA
-   *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_SECTOR_OFFSET) = sector_num;
-   *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET) = DISK_R_BIT;
+   *(volatile size_t **)(PA_DISK+ADDR_PtoV2+DISK_DMA_OFFSET) = (size_t *)(buf-ADDR_PtoV1);///PA
+   *(volatile size_t *)(PA_DISK+ADDR_PtoV2+DISK_SECTOR_OFFSET) = sector_num;
+   *(volatile size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET) = DISK_R_BIT;
    while(!nonblock && (*(size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET)|DISK_RW_MASK)==DISK_RW_MASK);///wait for pending
 }
 void read_block(size_t sector_num, void *buf){
    _read_block_(sector_num,buf,0);
 }
 void _write_block_(size_t sector_num, void *buf, int nonblock){
-   *(size_t **)(PA_DISK+ADDR_PtoV2+DISK_DMA_OFFSET) = (size_t *)(buf-ADDR_PtoV1);///PA
-   *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_SECTOR_OFFSET) = sector_num;
-   *(size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET) = DISK_W_BIT;
+   *(volatile size_t **)(PA_DISK+ADDR_PtoV2+DISK_DMA_OFFSET) = (size_t *)(buf-ADDR_PtoV1);///PA
+   *(volatile size_t *)(PA_DISK+ADDR_PtoV2+DISK_SECTOR_OFFSET) = sector_num;
+   *(volatile size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET) = DISK_W_BIT;
    while(!nonblock && (*(size_t *)(PA_DISK+ADDR_PtoV2+DISK_STATUS_OFFSET)|DISK_RW_MASK)==DISK_RW_MASK);///wait for pending
 }
 void write_block(size_t sector_num, void *buf){

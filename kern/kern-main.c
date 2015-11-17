@@ -38,11 +38,11 @@ void slave_main(void)
 
 void smp_startup(){
     int i;
-    int **mailbox_addr;
-    mailbox_addr = (int **)MSIM_ORDER_MAILBOX_BASE_VA;
+    volatile int **mailbox_addr;
+    mailbox_addr = (volatile int **)MSIM_ORDER_MAILBOX_BASE_VA;
     for(i=1;i<CPU_NUM;++i){
         kprintf("starting %d!\n",i);
-        *mailbox_addr =(int *)((unsigned int)__slave_entry+(i<<4));
+        *mailbox_addr =(int *)((volatile unsigned int)__slave_entry+(i<<4));
     }
 
 }
