@@ -20,3 +20,13 @@ NESTED(__start, 0, ra)
         jal     main
 END(__start)
 
+
+NESTED(__slave_entry)
+        mfc0    a0, CP0_STATUS
+        ori     a0, ST_ERL
+        xori    a0, ST_ERL
+        mtc0    a0, CP0_STATUS
+        LA      sp, cpu_stack
+        ADDIU   sp, KSTACK_SIZE
+        jal     slave_main
+END(__slave_entry)
