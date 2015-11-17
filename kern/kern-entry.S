@@ -21,7 +21,7 @@ NESTED(__start, 0, ra)
 END(__start)
 
 
-NESTED(__slave_entry)
+LEAF(__slave_entry)
         mfc0    a0, CP0_STATUS
         ori     a0, ST_ERL
         xori    a0, ST_ERL

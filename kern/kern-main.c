@@ -1,5 +1,12 @@
+#include "sys/types.h"
+#include "stddef.h"
+#include "stdarg.h"
+#include "stdio.h"
 #include "config.h"
+#include <asm/smp.h>
 
+// todo: fix it
+#define cpuid() 9
 
 extern void __slave_entry(void);
 
