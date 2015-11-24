@@ -1,3 +1,3 @@
 #include "kern-stack.h"
-
-unsigned char cpu_stack[KSTACK_SIZE];
+#include "config.h"
+unsigned char cpu_stack[CPU_NUM][KSTACK_SIZE];

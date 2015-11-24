@@ -6,7 +6,7 @@
 #include <asm/smp.h>
 
 // todo: fix it
-#define cpuid() 9
+//#define cpuid() 9
 
 extern void __slave_entry(void);
 
@@ -31,24 +31,34 @@ int kprintf(char *fmt,...){
 
 void slave_main(void)
 {
+        int i,j;
         kprintf("Hello from CPU #%d!\n", cpuid());
-        for (;;)
+        for(;;);
+        kputs("hehehe\n");
+        for (i=0;1;++i){
+            for(j=0;j<999;++j)
+            kputs("slave\n");
+        }
                 /* nothing */;
 }
 
 void smp_startup(){
-    int i;
-    volatile int **mailbox_addr;
-    mailbox_addr = (volatile int **)MSIM_ORDER_MAILBOX_BASE_VA;
+    unsigned int i;
+    volatile unsigned int **mailbox_addr;
+    mailbox_addr = (volatile unsigned int **)MSIM_ORDER_MAILBOX_BASE_VA;
+    kprintf("Mailbox addr %x\n",mailbox_addr);
     for(i=1;i<CPU_NUM;++i){
         kprintf("starting %d!\n",i);
-        *mailbox_addr =(int *)((volatile unsigned int)__slave_entry+(i<<4));
+        kprintf("Addr:%x,DATA:%x,%x %x\n",((int)mailbox_addr+(i<<4)),*(char *)(mailbox_addr+(i<<4)),mailbox_addr,(i<<4));
+        *(int **)((int)mailbox_addr+(i<<4)) =(int *)__slave_entry;
+        kprintf("Addr:%x,DATA:%x,%x %x\n",((int)mailbox_addr+(i<<4)),*(char *)(mailbox_addr+(i<<4)),mailbox_addr,(i<<4));
     }
 
 }
 int main(void){
     kputs("Hello kern MAIN!!\n");
     smp_startup();
+    kputs("end:);");
     for(;;);
 }
 
