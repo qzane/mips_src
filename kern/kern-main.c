@@ -50,7 +50,7 @@ void smp_startup(){
     for(i=1;i<CPU_NUM;++i){
         kprintf("starting %d!\n",i);
         kprintf("Addr:%x,DATA:%x,%x %x\n",((int)mailbox_addr+(i<<4)),*(char *)(mailbox_addr+(i<<4)),mailbox_addr,(i<<4));
-        *(int **)((int)mailbox_addr+(i<<4)) =(int *)__slave_entry;
+        *(volatile unsigned int **)((unsigned int)mailbox_addr+(i<<4)) =(unsigned int *)__slave_entry;
         kprintf("Addr:%x,DATA:%x,%x %x\n",((int)mailbox_addr+(i<<4)),*(char *)(mailbox_addr+(i<<4)),mailbox_addr,(i<<4));
     }
 
@@ -58,7 +58,7 @@ void smp_startup(){
 int main(void){
     kputs("Hello kern MAIN!!\n");
     smp_startup();
-    kputs("end:);");
+    kputs("smp_startup end\n");
     for(;;);
 }
 

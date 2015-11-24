@@ -1,4 +1,5 @@
-Obtaining CPU ID on MIPS Revision 2 and later
+Synchronization basics: locks
+
 
 todo: calc different mailbox_va
 todo: '..' in Makefile
