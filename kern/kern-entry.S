@@ -26,6 +26,8 @@ LEAF(__slave_entry)
         ori     a0, ST_ERL
         xori    a0, ST_ERL
         mtc0    a0, CP0_STATUS
+		cpuid 	a1, a2 /* get cpuid in a1*/
+		sll     a2, a1, 13 /* KSTACK_SIZE == 8192*/
         LA      sp, cpu_stack
         ADDIU   sp, KSTACK_SIZE
         jal     slave_main
