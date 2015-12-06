@@ -8,7 +8,7 @@
 /* ... */
 struct spinlock {
         uint32_t        state;
-#define LOCK_BIT        0
+#define LOCK_BIT        0 
 };
 /* ... */
 
@@ -16,7 +16,9 @@ struct spinlock {
 static void spinlock_lock(struct spinlock *lock)
 {
 	bool result;
+	uint32_t *addr;
 	uint32_t bit;
+	addr = lock->state;
 	asm volatile (
 		"1:	ll	%[reg], %[mem];"
 		"   and %[reg1], %[reg], %[val]"
@@ -30,7 +32,9 @@ static void spinlock_lock(struct spinlock *lock)
 }
 static void spinlock_unlock(struct spinlock *lock)
 {
-	;
+	uint32_t *addr;
+	addr = lock->state;
+	atomic32_clear_bit(addr,LOCK_BIT); 
 }
 
 
