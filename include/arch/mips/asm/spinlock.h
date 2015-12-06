@@ -21,11 +21,11 @@ static void spinlock_lock(struct spinlock *lock)
 	bool result;
 	uint32_t *addr;
 	uint32_t bit;
-	addr = lock->state;
+	addr = &(lock->state);
 	asm volatile (
 		"1:	ll	%[reg], %[mem];"
-		"   and %[reg1], %[reg], %[val]"
-		"   bne %[reg1], 1b;"
+		"   and %[reg1], %[reg], %[val];"
+		"   bnez %[reg1], 1b;"
 		"	or	%[reg], %[val];"
 		"	sc	%[reg], %[mem];"
 		"	beqz	%[reg], 1b;"
@@ -37,9 +37,12 @@ static void spinlock_lock(struct spinlock *lock)
 static void spinlock_unlock(struct spinlock *lock)
 {
 	uint32_t *addr;
-	addr = lock->state;
-	if(((*addr&LOCK_CPUID_MASK)>>LOCK_CPUID_OFFSET)==cpuid())
-		atomic32_clear_bit(addr,LOCK_BIT); 
+	addr = &(lock->state);
+	if(((*addr&LOCK_CPUID_MASK)>>LOCK_CPUID_OFFSET)==cpuid()){
+		atomic32_clear_bit(addr,LOCK_BIT);
+        *addr |= LOCK_CPUID_MASK;
+        *addr ^= LOCK_CPUID_MASK;
+    }
 }
 
 
