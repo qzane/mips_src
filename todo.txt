@@ -1,7 +1,6 @@
-Synchronization basics: locks
+Classic exception handling
 
 
-todo: calc different mailbox_va
 todo: '..' in Makefile
 tode: improve readdisk if(offset=0&&len>block_size)
 
