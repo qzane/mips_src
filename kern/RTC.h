@@ -4,9 +4,20 @@
 #include <asm/smp.h>
 #include <asm/mipsregs.h>
 #include "kstdio.h"
+#include "config.h"
+#define MSIM_RTC_BASE  0x9f000090
 
-#define COUNT_PER_MS 1981
-#define COUNT_PER_S 1981117
+
+
+#define COUNT_PER_MS 2020
+#define COUNT_PER_S 2020740
+
+volatile uint32_t time(){
+    return *((volatile uint32_t*)MSIM_RTC_BASE);
+}
+volatile uint32_t utime(){//seemed not to work
+    return *(((volatile uint32_t*)MSIM_RTC_BASE)+1);
+}
 
 
 void usleep(unsigned int ms){
@@ -37,8 +48,8 @@ void RTC_MAIN(){
     kprintf("This is RTC main! cpu:%d\n",cpuid());
     ///show_count_inc();
     while(1){
-        sleep(10);
-        kprintf("This is ten second\n");
+        sleep(5);
+        kprintf("This is five second. Time:%u uTime:%u\n",time(),utime());
     }
 }
 
