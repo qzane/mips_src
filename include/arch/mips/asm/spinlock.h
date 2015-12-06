@@ -39,9 +39,9 @@ static void spinlock_unlock(struct spinlock *lock)
 	uint32_t *addr;
 	addr = &(lock->state);
 	if(((*addr&LOCK_CPUID_MASK)>>LOCK_CPUID_OFFSET)==cpuid()){
-		atomic32_clear_bit(addr,LOCK_BIT);
         *addr |= LOCK_CPUID_MASK;
         *addr ^= LOCK_CPUID_MASK;
+		atomic32_clear_bit(addr,LOCK_BIT);
     }
 }
 

@@ -5,6 +5,7 @@
 #include "config.h"
 #include <asm/smp.h>
 #include <asm/spinlock.h>
+#include <asm/mipsregs.h> ///todo: i don't think it should appear here
 
 
 // todo: fix it
@@ -42,6 +43,7 @@ void slave_main(void)
         for(i=0;i<1000;++i)
             lock_test1=lock_test1+1;
         for(i=0;i<1000;++i){
+            spinlock_unlock(&lock);//to test cpuid
             spinlock_lock(&lock);
             lock_test2=lock_test2+1;
             spinlock_unlock(&lock);
