@@ -3,10 +3,10 @@
 #include "stdarg.h"
 #include "stdio.h"
 #include "config.h"
+#include "kstdio.h"
 #include <asm/smp.h>
 #include <asm/spinlock.h>
-#include <asm/mipsregs.h> ///todo: i don't think it should appear here
-
+#include "RTC.h"
 
 // todo: fix it
 //#define cpuid() 9
@@ -16,7 +16,7 @@ extern void __slave_entry(void);
 int lock_test1=0;
 int lock_test2=0;
 struct spinlock lock;
-
+/*
 void kputs(const char *buf){
     // Printer: 0x1f000010 | 0xbf000010 
     volatile unsigned char *pointer = (volatile unsigned char *)(PA_PRINTER+ADDR_PtoV2);
@@ -34,7 +34,7 @@ int kprintf(char *fmt,...){
    kputs(buffer);
    va_end(ap);  
    return res;
-}
+}*/
 
 void slave_main(void)
 {
@@ -77,6 +77,7 @@ int main(void){
     kputs("Hello kern MAIN!!\n");
     smp_startup();
     kputs("smp_startup end\n");
+    RTC_MAIN();
     for(;;);
 }
 
