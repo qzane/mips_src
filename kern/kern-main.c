@@ -6,12 +6,15 @@
 #include "kstdio.h"
 #include <asm/smp.h>
 #include <asm/spinlock.h>
+#include <asm/mipsregs.h>
+#include <asm/cp0regdef.h>
 #include "RTC.h"
 
 // todo: fix it
 //#define cpuid() 9
 
 extern void __slave_entry(void);
+extern void _TRAP_HANDLER(void);
 
 int lock_test1=0;
 int lock_test2=0;
@@ -73,7 +76,23 @@ void smp_startup(){
     kprintf("lock_test1(without lock) %d\n",lock_test1);
     kprintf("lock_test2(with lock) %d\n",lock_test2);
 }
+void trap_init(){
+    volatile uint32_t status;
+    volatile uint8_t *p1,*p2,*p3;
+    p1 = (uint8_t*)0x80000000;
+    p2 = (uint8_t*)_TRAP_HANDLER;
+    p3 = p2+sizeof(_TRAP_HANDLER);
+    for(;p2<p3;++p2){
+        *p1=*p2;
+        ++p1;
+    }
+    status = read_c0_status();
+    status |= ST_BEV;
+    status ^= ST_BEV;
+    write_c0_status(status);
+}
 int main(void){
+    trap_init();
     kputs("Hello kern MAIN!!\n");
     smp_startup();
     kputs("smp_startup end\n");

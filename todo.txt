@@ -1,5 +1,4 @@
-Classic exception handling
-
+Timer interrupts in MIPS
 
 todo: '..' in Makefile
 tode: improve readdisk if(offset=0&&len>block_size)
