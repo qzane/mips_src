@@ -16,7 +16,7 @@ void reloc_data_bss(void){
 typedef void (*readdisk_t)(size_t,ssize_t,void *,size_t);
 typedef int (*kprintf_t)(char *fmt,...);
 //typedef void (*bootentry_t)(readdisk_t,kprintf_t);
-typedef void (*bootentry_t)(readdisk_t);
+typedef void (*bootentry_t)(readdisk_t,kprintf_t);
 
 
 
@@ -33,8 +33,8 @@ void execute_mbr(void){
     //read_block(0,mbr);
     readdisk(0,0,mbr,SECTOR_SIZE);   
     boot = (bootentry_t)mbr; 
-    //(*boot)(readdisk,kprintf);
-    (*boot)(readdisk);
+    (*boot)(readdisk,kprintf);
+    //(*boot)(readdisk);
 }
 
 
@@ -60,6 +60,7 @@ void write_block(size_t sector_num, void *buf){
 unsigned char DISK_BUFF[SECTOR_SIZE];
 void readdisk(size_t sector_num, ssize_t offset, void *buf, size_t len){
    unsigned char *addr;
+   kprintf("sector_num:%x\noffset:%x\nlen:%u\nbuf:%x\n",sector_num,offset,len,buf);
    addr = buf;
    read_block(sector_num,DISK_BUFF);
    ++sector_num;

@@ -15,7 +15,7 @@
 
 extern void __slave_entry(void);
 extern void _TRAP_HANDLER(void);
-
+unsigned int kernelsp[4];
 int lock_test1=0;
 int lock_test2=0;
 struct spinlock lock;

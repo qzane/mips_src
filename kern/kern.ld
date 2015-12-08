@@ -5,8 +5,9 @@ ENTRY(__start)
 
 
 SECTIONS {
-    . = 0x80003000;
+    . = 0x80030000;
     .text : {
+        /*kern-entry.o(.text);*/
         *(.text);
     }
     .rodata : {

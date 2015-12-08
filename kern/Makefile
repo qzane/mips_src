@@ -12,11 +12,14 @@ ELF             = kern
 # Take caution of the order, if you didn't make the required changes
 # in linker script in previous exercise.
 # Add snprintf.o to the list if you have date & time printing
-OBJS            = handle_exception.o \
+OBJS            = \
+                  handle_exception.o \
+				  kern-entry.o \
                   trap_handler.o \
-                  kern-entry.o \
                   kern-stack.o \
                   kern-main.o \
+                  RTC.o \
+				  kstdio.o \
                   ../libc/snprintf.o \
                   ../libc/memcpy.o \
                   ../libc/memset.o

@@ -7,7 +7,7 @@ OBJCOPY         = $(CROSS_COMPILE)objcopy
 
 AS              = $(CC)
 INCS            = -I. -I../include -I../include/arch/mips -I../include/arch/mips/ -I../include/arch/mips/asm/mach-msim/
-DISK            = ../msim/disk.img
+DISK            = /root/mips_src/msim/disk.img
 export
 
 all:

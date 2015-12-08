@@ -3,7 +3,7 @@
 #include "stdarg.h"
 #include "stdio.h"
 #include "config.h"
-#include "kstdio.h"
+///#include "kstdio.h"
 #include <asm/smp.h>
 #include <asm/spinlock.h>
 #include "RTC.h"
